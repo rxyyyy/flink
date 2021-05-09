@@ -26,7 +26,9 @@ under the License.
 		<groupId>org.apache.flink</groupId>
 		<artifactId>flink-examples</artifactId>
 		<version>1.14-SNAPSHOT</version>
+		<!--
 		<relativePath>..</relativePath>
+		-->
 	</parent>
 
 	<artifactId>flink-examples-streaming_${scala.binary.version}</artifactId>
@@ -119,6 +121,12 @@ under the License.
 				</exclusion>
 			</exclusions>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-walkthrough-common_2.11</artifactId>
+            <version>1.14-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

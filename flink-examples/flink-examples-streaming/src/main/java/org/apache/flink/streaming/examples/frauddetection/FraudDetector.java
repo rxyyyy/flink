@@ -18,6 +18,10 @@
 
 package org.apache.flink.streaming.examples.frauddetection;
 
+import org.apache.flink.api.common.state.ListState;
+import org.apache.flink.api.common.state.ListStateDescriptor;
+import org.apache.flink.api.common.state.ReducingState;
+import org.apache.flink.api.common.state.ReducingStateDescriptor;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -37,6 +41,14 @@ public class FraudDetector extends KeyedProcessFunction<Long, Transaction, Alert
 
     private transient ValueState<Boolean> flagState;
     private transient ValueState<Long> timerState;
+    /** total amount */
+    private transient ReducingState<Double> amountState;
+    /** every single amout  */
+    private transient ListState<Double> recordsState;
+
+    public static Double add(Double a, Double b){
+        return a + b;
+    }
 
     @Override
     public void open(Configuration parameters) {
@@ -49,6 +61,18 @@ public class FraudDetector extends KeyedProcessFunction<Long, Transaction, Alert
                 "timer-state",
                 Types.LONG);
         timerState = getRuntimeContext().getState(timerDescriptor);
+
+
+        ReducingStateDescriptor<Double> amountDescriptor = new ReducingStateDescriptor<>(
+                "amount-state",
+                FraudDetector::add,
+                Types.DOUBLE);
+        amountState = getRuntimeContext().getReducingState(amountDescriptor);
+
+        ListStateDescriptor<Double> recordsDescriptor = new ListStateDescriptor<>(
+               "records-state",
+                Types.DOUBLE);
+        recordsState = getRuntimeContext().getListState(recordsDescriptor);
     }
 
     @Override
@@ -82,6 +106,9 @@ public class FraudDetector extends KeyedProcessFunction<Long, Transaction, Alert
 
             timerState.update(timer);
         }
+
+        amountState.add( transaction.getAmount() );
+        recordsState.add( transaction.getAmount() );
     }
 
     @Override

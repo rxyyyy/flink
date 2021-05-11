@@ -26,16 +26,12 @@ import org.apache.flink.walkthrough.common.entity.Alert;
 import org.apache.flink.walkthrough.common.entity.Transaction;
 import org.apache.flink.walkthrough.common.source.TransactionSource;
 
-/**
- * Skeleton code for the datastream walkthrough
- */
 public class FraudDetectionJob {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         // checkpoint config
         env.enableCheckpointing(1000);
-        //env.getCheckpointConfig().setCheckpointStorage("file:///data/flink/checkpoints");
         env.getCheckpointConfig().setCheckpointStorage(
                 "file:/Users/yangruoxue/data/flink/checkpoints/frauddetection");
 
